@@ -1,79 +1,87 @@
-Atividade do Leandro
+'Atividade do Leandro
 
 https://www.youtube.com/watch?v=ecKij3K6jYs
 
-PARAMOS EM 9:20
+'PARAMOS EM 9:20
 
----
+'--------------------------------------------------
 
-Fiz mapeamento de pastas
-Início de programas
-Montei uma impressora fictícia
-mapeamento da impressora fictícia
+'Fiz mapeamento de pastas
+'Início de programas
+'Montei uma impressora fictícia
+'Mapeamento da impressora fictícia
 
-apagar os scripts feitos do grupos Alunos e Professores
-Talvez apagar a impressora fictícia
+'Apagar os scripts feitos dos grupos Alunos e Professores
+'Talvez apagar a impressora fictícia
 
-Fazer isso via VBS
-para isso assistir o vídeo (link do vídeo acima).
+'Fazer isso via VBS
+'Para isso, assistir ao vídeo acima
 
----
+'--------------------------------------------------
 
-SCRIPT VBS ABAIXO:
+'Ignora erros no script
+On Error Resume Next
+Err.Clear
 
-'Ignora erro no script
+'Cria objetos necessários
+Set objNetwork = CreateObject("WScript.Network")
+Set FSODrive = CreateObject("Scripting.FileSystemObject")
 
-On error Resume Next
-Err.clear 0
-
-'Mapeia pastas de acordo com o grupo USR
-
-set objNetwork= CreateObject("WScript.Network")
+'Obtém domínio e usuário
 strDom = objNetwork.UserDomain
 strUser = objNetwork.UserName
+
+'Obtém informações do usuário
 Set objUser = GetObject("WinNT://" & strDom & "/" & strUser & ",user")
 
+'Verifica os grupos do usuário
 For Each objGroup In objUser.Groups
 
-	Select Case objGroup.Name
-		Case "Alunos"
-			If Not FSODrive.DriveExists("G:") Then
-				objNetwork.MapNetworkDrive "G:", "\\ryan\Aulas", "true"
-			End If
-			If Not FSODrive.DriveExists("H:") Then
-				objNetwork.MapNetworkDrive "H:", "\\ryan\Alunos", "true"
-			End If
-			If Not FSODrive.DriveExists("I:") Then
-				objNetwork.MapNetworkDrive "I:", "\\ryan\Trabalhos", "true"
-			End If
+    Select Case objGroup.Name
 
-			MsgBox "Bem-vindo ao sistema, Aluno(a)! Bons estudos.", 64, "Logon Alunos"
+        Case "Alunos"
 
-			objNetwork.AddWindowsPrinterConnection "\\ryan\HP"
+            If Not FSODrive.DriveExists("G:") Then
+                objNetwork.MapNetworkDrive "G:", "\\ryan\Aulas", True
+            End If
 
+            If Not FSODrive.DriveExists("H:") Then
+                objNetwork.MapNetworkDrive "H:", "\\ryan\Alunos", True
+            End If
 
-		Case "Professores"
-			If Not FSODrive.DriveExists("G:") Then
-				objNetwork.MapNetworkDrive "G:", "\\ryan\Aulas", "true"
-			End If
-			If Not FSODrive.DriveExists("H:") Then
-				objNetwork.MapNetworkDrive "H:", "\\ryan\Alunos", "true"
-			End If
-			If Not FSODrive.DriveExists("I:") Then
-				objNetwork.MapNetworkDrive "I:", "\\ryan\Trabalhos", "true"
-			End If
-			If Not FSODrive.DriveExists("J:") Then
-				objNetwork.MapNetworkDrive "J:", "\\ryan\Provas", "true"
-			End If
+            If Not FSODrive.DriveExists("I:") Then
+                objNetwork.MapNetworkDrive "I:", "\\ryan\Trabalhos", True
+            End If
 
-			MsgBox "Bem-vindo(a), Professor(a)! O sistema de aulas está pronto.", 64, "Logon Professores"
+            MsgBox "Bem-vindo ao sistema, Aluno(a)! Bons estudos.", 64, "Logon Alunos"
 
-			objNetwork.AddWindowsPrinterConnection "\\ryan\HP"
+            objNetwork.AddWindowsPrinterConnection "\\ryan\HP"
 
-	End Select
+        Case "Professores"
+
+            If Not FSODrive.DriveExists("G:") Then
+                objNetwork.MapNetworkDrive "G:", "\\ryan\Aulas", True
+            End If
+
+            If Not FSODrive.DriveExists("H:") Then
+                objNetwork.MapNetworkDrive "H:", "\\ryan\Alunos", True
+            End If
+
+            If Not FSODrive.DriveExists("I:") Then
+                objNetwork.MapNetworkDrive "I:", "\\ryan\Trabalhos", True
+            End If
+
+            If Not FSODrive.DriveExists("J:") Then
+                objNetwork.MapNetworkDrive "J:", "\\ryan\Provas", True
+            End If
+
+            MsgBox "Bem-vindo(a), Professor(a)! O sistema de aulas está pronto.", 64, "Logon Professores"
+
+            objNetwork.AddWindowsPrinterConnection "\\ryan\Impressora-Da-Rede"
+
+    End Select
+
 Next
 
-'Mapeia impressoras e pastas
-Set WshNetwork = Wscript.CreateObject("Wscript.Network")
-
-WshNetwork.MapNetworkDrive "P:","\\ryan\Publica","true"
+'Mapeia pasta pública
+objNetwork.MapNetworkDrive "P:", "\\ryan\Publica", True
